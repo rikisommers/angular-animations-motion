@@ -1,24 +1,54 @@
 # NgxMotion
 
-This library was generated with [Angular CLI](https://github.com/angular/angular-cli) version 19.1.0.
+WIP - Trigger and control angular animations with a Framer Motion like workflow in template HTML.
+Generated with [Angular CLI](https://github.com/angular/angular-cli) version 19.1.0.
 
-## Code scaffolding
+## MotionDirective
 
-Run `ng generate component component-name --project ngx-motion` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module --project ngx-motion`.
-> Note: Don't forget to add `--project ngx-motion` or else it will be added to the default project in your `angular.json` file. 
+  @Input() initial: any = {};
+  @Input() animate: any = {};
+  @Input() exit: any = {};
+  @Input() inView: any = {};
+  @Input() duration = '0.3s';
+  @Input() delay = '0s';
+  @Input() repeat = false;
+  @Input() exitDelay = '0s';
+  @Input() easing = 'ease';
+  @Input() offset = '0px';
+  @Input() whileHover: any = {};
+  @Input() staggerChildren = '0s';
+  @Input() whileTap: any = {};
+  @Input() whileFocus: any = {};
+  @Input() whileInView: any = {};
+  @Input() variants: any = {};
+  @Output() animationComplete = new EventEmitter<void>();
 
-## Build
+Current Limitations:
+* staggerChildren not running stil in progress
+* dynamic animate values must be generated in ts, you cant use directly in the animate value.
+* InView offset not complete.
+* Repeat & offset only apply to inView animations.
+* exitDelay not complete.
 
-Run `ng build ngx-motion` to build the project. The build artifacts will be stored in the `dist/` directory.
 
-## Publishing
+## MotionHostComponent
 
-After building your library with `ng build ngx-motion`, go to the dist folder `cd dist/ngx-motion` and run `npm publish`.
+WIP - Atempt at Angular version of AnimatePresence.
+Not quite there yet. So far unable to use @queue as expected using Animation Builder.
+Relying on router event and getLongestDuration to delay the [motion] entry delay.
 
-## Running unit tests
 
-Run `ng test ngx-motion` to execute the unit tests via [Karma](https://karma-runner.github.io).
+## MotionService
 
-## Further help
-
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+scrollYProgress 
+registerMotionElement
+unregisterMotionElement
+getMotionElements
+getAllElementsByRoute
+cancelAllAnimations
+runAllEnterAnimations
+runAllExitAnimations
+runAllEnterAnimationsForRoute
+getLongestExitDuration
+getLongestEnterDuration
+getLongestDurationForRoute

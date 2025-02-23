@@ -1,6 +1,6 @@
 {
   "name": "@hilux/ngx-motion",
-  "version": "1.0.9",
+  "version": "1.0.10",
   "description": "A library for Angular motion directives",
   "main": "bundles/ngx-motion.umd.js",
   "module": "fesm5/ngx-motion.js",

@@ -25,7 +25,7 @@ Generated with [Angular CLI](https://github.com/angular/angular-cli) version 19.
 
 Current Limitations:
 
-- staggerChildren not running still in progress
+- staggerChildren not complete.
 - dynamic animate values must be generated in ts, you cant use directly in the animate value.
 - InView offset not complete.
 - Repeat & offset only apply to inView animations.

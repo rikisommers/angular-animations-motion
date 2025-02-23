@@ -3,6 +3,58 @@
 WIP - Trigger and control angular animations with a Framer Motion like workflow in template HTML.
 Generated with [Angular CLI](https://github.com/angular/angular-cli) version 19.1.0.
 
+
+## Basic Example
+
+```
+ <div
+    motion
+    [initial]="{
+    backgroundColor: 'red',
+    scale: 1,
+    transform: 'translateX(0px)'
+    }"
+    [animate]="{
+    backgroundColor: 'blue',
+    scale: 1,
+    transform: 'translateX(100px)'
+    }"
+    [duration]="'.5s'"
+    style="height: 100px; width: 100px; background-color: red"
+>
+    Hello World
+</div>
+```
+
+
+## Variant Example
+
+```
+this.foodVariants = {
+    egg: { opacity: 1, transform: 'translateX(0px)', backgroundColor: 'blue' },
+    apple: { opacity: 1, transform: 'translateX(100px)', backgroundColor: 'green' },
+    pasta: { opacity: 0.5, transform: 'scale(0.8)', backgroundColor: 'yellow' }
+};
+
+<div
+    motion
+    [variants]="foodVariants"
+    [animate]="currentFood"
+    style="
+        height: 100px;
+        width: 100px;
+        background-color: red;
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: 100;
+    "
+    >
+   {{currentFood}}
+</div>
+
+```
+
 ## MotionDirective
 
 - @Input() initial: any = {};
@@ -26,7 +78,7 @@ Generated with [Angular CLI](https://github.com/angular/angular-cli) version 19.
 Current Limitations:
 
 - staggerChildren not complete.
-- dynamic animate values must be generated in ts, you cant use directly in the animate value.
+- Dynamic animate values must be generated in ts, you cant set directly in the animate value.
 - InView offset not complete.
 - Repeat & offset only apply to inView animations.
 - exitDelay not complete.

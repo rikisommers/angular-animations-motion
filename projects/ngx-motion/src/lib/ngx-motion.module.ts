@@ -1,14 +1,16 @@
 import { NgModule } from '@angular/core';
-import { NgxMotionDirective } from './ngx-motion.directive';
-
+import { MotionDirective } from './ngx-motion.directive';
+import { MotionHostComponent } from './motion-host/motion-host.component';
 @NgModule({
   declarations: [
-    NgxMotionDirective
+    MotionDirective,
   ],
   imports: [
+    MotionHostComponent
   ],
   exports: [
-    NgxMotionDirective
+    MotionDirective,
+    MotionHostComponent
   ]
 })
 export class NgxMotionModule { }

@@ -4,6 +4,52 @@ WIP - Trigger and control angular animations with a Framer Motion like workflow 
 Generated with [Angular CLI](https://github.com/angular/angular-cli) version 19.1.0.
 
 
+## Setup
+
+Make sure you have provideAnimations() in app config
+
+```
+import { ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
+import { provideRouter, Router, withViewTransitions } from '@angular/router';
+import { provideAnimations } from '@angular/platform-browser/animations';
+import { routes } from './app.routes';
+import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
+
+export const appConfig: ApplicationConfig = {
+  providers: [
+    provideZoneChangeDetection({ eventCoalescing: true }),
+    provideRouter(routes , withViewTransitions()),
+    provideClientHydration(withEventReplay()),
+    provideAnimations(),
+  ]
+};
+
+
+```
+
+Import motin directive in your component
+
+```
+import { Component } from '@angular/core';
+import { RouterOutlet, RouterLink, RouterLinkActive, ActivatedRoute, Router, NavigationEnd , NavigationStart} from '@angular/router';
+import { MotionDirective } from '../../../../dist/ngx-motion/';
+@Component({
+  selector: 'app-root',
+  imports: [
+    RouterOutlet,
+    MotionDirective
+  ],
+  templateUrl: './app.component.html',
+  styleUrl: './app.component.scss',
+  standalone: true
+})
+export class AppComponent {
+  title = 'ngx-motion-demo';
+}
+
+```
+
+
 ## Basic Example
 
 ```

@@ -1,11 +1,11 @@
 import { Component } from '@angular/core';
 import { RouterOutlet, RouterLink, RouterLinkActive, ActivatedRoute, Router, NavigationEnd , NavigationStart} from '@angular/router';
-import { MotionDirective } from '../../../../dist/ngx-motion/';
+import { MotionOneDirective, MotionOneService } from '../../../../dist/ngx-motion/';
 @Component({
   selector: 'app-root',
   imports: [
     RouterOutlet,
-    MotionDirective
+    MotionOneDirective,
   ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
@@ -13,4 +13,11 @@ import { MotionDirective } from '../../../../dist/ngx-motion/';
 })
 export class AppComponent {
   title = 'ngx-motion-demo';
+
+  constructor(private motionOneService: MotionOneService) {
+    console.log('sss');
+    this.motionOneService.getMotionElements().forEach(element => {
+      console.log(element);
+    });
+  }
 }

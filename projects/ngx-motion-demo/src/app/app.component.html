@@ -1,41 +1,31 @@
-<!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
-<!-- * * * * * * * * * * * The content below * * * * * * * * * * * -->
-<!-- * * * * * * * * * * is only a placeholder * * * * * * * * * * -->
-<!-- * * * * * * * * * * and can be replaced.  * * * * * * * * * * -->
-<!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
-<!-- * * * * * * * * * Delete the template below * * * * * * * * * -->
-<!-- * * * * * * * to get started with your project! * * * * * * * -->
-<!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
 
-<main>
-  <div
-  motion
-  [initial]="{
-    backgroundColor: 'red',
-    scale: 1,
-    transform: 'translateX(0px)'
-  }"
-  [animate]="{
-    backgroundColor: 'aqua',
-    scale: 1,
-    transform: 'translateX(100px)'
-  }"
-  [duration]="'.5s'"
+<div class="grid grid-cols-[300px_1fr]">
 
-  style="height: 100px; width: 100px; background-color: red"
->
-  Hello
+  <nav class="bg-gray-100 flex flex-grow p-16">
+
+    <ul>
+      <li>
+        <a href="/">
+            Home
+        </a>
+      </li>
+      <li>
+        <a href="/work">
+            Work
+        </a>
+      </li>
+      <li>
+        <a href="/play">
+            Play
+        </a>
+      </li>
+      
+    </ul>
+  </nav>
+
+  <main class="p-16 flex flex-col flex-grow bg-slate-100">
+    <h1>App Component</h1>
+    <router-outlet />  
+  </main>
+    
 </div>
-
-</main>
-
-<!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
-<!-- * * * * * * * * * * * The content above * * * * * * * * * * * * -->
-<!-- * * * * * * * * * * is only a placeholder * * * * * * * * * * * -->
-<!-- * * * * * * * * * * and can be replaced.  * * * * * * * * * * * -->
-<!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
-<!-- * * * * * * * * * * End of Placeholder  * * * * * * * * * * * * -->
-<!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
-
-
-<router-outlet />

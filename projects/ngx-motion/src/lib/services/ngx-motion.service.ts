@@ -68,8 +68,15 @@ import {
     }
   
     unregisterMotionElement(element: MotionDirective) {
-      this.motionElements = this.motionElements.filter((e) => e !== element);
-      this.updateTotalExitDuration();
+      const index = this.motionElements.indexOf(element);
+      if (index !== -1) {
+        this.motionElements.splice(index, 1);
+        this.updateTotalExitDuration();
+        console.log(`Motion element unregistered: ${element}`);
+        return true;
+      }
+      console.log(`Failed to unregister motion element: ${element} not found`);
+      return false;
     }
   
     getMotionElements(): MotionDirective[] {

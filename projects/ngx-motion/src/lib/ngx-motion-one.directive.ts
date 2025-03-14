@@ -17,8 +17,9 @@ import {
 } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { MotionOneService } from './services/ngx-motion-one.service';
-import { animate,  easeIn, easeOut, easeInOut, stagger } from 'motion';
+import { MotionAnimationService } from './services/motion-animation.service';
 import type { NativeAnimationControls, AnimationOptions, Target } from 'motion';
+import { animate, easeIn, easeOut, easeInOut, stagger } from './utils/motion-browser-safe';
 
 // Define interface for transition object similar to Framer Motion
 export interface TransitionOptions {
@@ -43,7 +44,9 @@ export interface VariantWithTransition {
 let uniqueIdCounter = 0; 
 
 @Directive({
-  selector: '[motionone]'
+  selector: '[motionone]',
+  standalone: true,
+  exportAs: 'motionone'
 })
 
 export class MotionOneDirective implements OnInit, OnDestroy, OnChanges, AfterContentInit {
@@ -89,19 +92,25 @@ export class MotionOneDirective implements OnInit, OnDestroy, OnChanges, AfterCo
   }
 
   constructor(
-    private el: ElementRef,
+    public el: ElementRef,
     private motionService: MotionOneService,
+    private motionAnimation: MotionAnimationService,
     @Inject(PLATFORM_ID) private platformId: Object
   ) {
     this.elementId = `motion-${uniqueIdCounter++}`;
-    this.el.nativeElement.setAttribute('id', this.elementId);
-    this.motionService.registerMotionElement(this);
-    this.applyInitialStyles();
-    this.routeDelay = this.motionService.getLongestExitDuration();
+    
+    // Only run browser-specific code in browser environment
+    if (isPlatformBrowser(this.platformId)) {
+      this.el.nativeElement.setAttribute('id', this.elementId);
+      // Store a reference to this directive on the element for easier access
+      (this.el.nativeElement as any)._motionDirective = this;
+      this.motionService.registerMotionElement(this);
+      this.applyInitialStyles();
+    }
   }
 
   ngOnInit() {
-    console.log(`[${this.elementId}] Initializing motionone directive`);
+   // console.log(`[${this.elementId}] Initializing motionone directive`);
     
     // Only run animations in browser environment
     if (isPlatformBrowser(this.platformId)) {
@@ -110,18 +119,18 @@ export class MotionOneDirective implements OnInit, OnDestroy, OnChanges, AfterCo
       while (parent) {
         if (parent.hasAttribute('motionone')) {
           this.isChild = true;
-          console.log(`[${this.elementId}] Detected as child of another motionone element: ${parent.id}`);
+      //    console.log(`[${this.elementId}] Detected as child of another motionone element: ${parent.id}`);
           break;
         }
         parent = parent.parentElement;
       }
 
-      console.log(`[${this.elementId}] isChild=${this.isChild}, will ${!this.isChild ? 'auto-play' : 'wait for parent'}`);
+    //  console.log(`[${this.elementId}] isChild=${this.isChild}, will ${!this.isChild ? 'auto-play' : 'wait for parent'}`);
       
       // Only auto-play animation if not a child of another motionone element
       if (!this.isChild) {
         setTimeout(() => {
-          console.log(`[${this.elementId}] Auto-playing initial animation after routeDelay=${this.routeDelay}`);
+     //     console.log(`[${this.elementId}] Auto-playing initial animation after routeDelay=${this.routeDelay}`);
           this.playAnimation(this.initial, this.animate);
         }, this.routeDelay);
       }
@@ -131,7 +140,7 @@ export class MotionOneDirective implements OnInit, OnDestroy, OnChanges, AfterCo
   ngAfterContentInit() {
     // Register child directives if we have staggerChildren
     if (this.childMotionDirectives && this.childMotionDirectives.length > 0) {
-      console.log(`[${this.elementId}] Found ${this.childMotionDirectives.length} child directives`);
+   //   console.log(`[${this.elementId}] Found ${this.childMotionDirectives.length} child directives`);
       
       // Set this directive as the parent for all children
       setTimeout(() => {
@@ -139,28 +148,28 @@ export class MotionOneDirective implements OnInit, OnDestroy, OnChanges, AfterCo
         const childDirectives = this.childMotionDirectives.filter(child => child !== this);
         this.childrenCount = childDirectives.length;
         
-        console.log(`[${this.elementId}] After filtering self, found ${this.childrenCount} actual children`);
+     //   console.log(`[${this.elementId}] After filtering self, found ${this.childrenCount} actual children`);
         
         // Set parent and index for each child
         childDirectives.forEach((child, index) => {
-          console.log(`[${this.elementId}] Setting parent for child ${child.elementId} with index ${index}/${this.childrenCount}`);
+      //    console.log(`[${this.elementId}] Setting parent for child ${child.elementId} with index ${index}/${this.childrenCount}`);
           child.setParent(this, index, this.childrenCount);
         });
         
         // Check if we need to stagger children
         const staggerValue = this.getStaggerValue();
-        console.log(`[${this.elementId}] Stagger value: ${staggerValue}, childrenCount: ${this.childrenCount}`);
+      //  console.log(`[${this.elementId}] Stagger value: ${staggerValue}, childrenCount: ${this.childrenCount}`);
         
         if (staggerValue > 0 && this.childrenCount > 0) {
-          console.log(`[${this.elementId}] Will apply stagger to children`);
+      ///    console.log(`[${this.elementId}] Will apply stagger to children`);
           // Trigger staggered animations for children
           this.applyStaggerToChildren();
         } else {
-          console.log(`[${this.elementId}] No stagger needed (staggerValue=${staggerValue}, childrenCount=${this.childrenCount})`);
+      //    console.log(`[${this.elementId}] No stagger needed (staggerValue=${staggerValue}, childrenCount=${this.childrenCount})`);
         }
       });
     } else {
-      console.log(`[${this.elementId}] No child directives found`);
+      //    console.log(`[${this.elementId}] No child directives found`);
     }
   }
 
@@ -178,7 +187,7 @@ export class MotionOneDirective implements OnInit, OnDestroy, OnChanges, AfterCo
     const staggerDirection = this.getStaggerDirection();
     const delayChildren = this.getDelayChildren();
     
-    console.log(`Parent ${this.elementId} applying stagger: value=${staggerValue}, direction=${staggerDirection}, delayChildren=${delayChildren}`);
+    //  console.log(`Parent ${this.elementId} applying stagger: value=${staggerValue}, direction=${staggerDirection}, delayChildren=${delayChildren}`);
     
     // Get all child directives (excluding self)
     const childDirectives = this.childMotionDirectives.filter(child => child !== this);
@@ -224,7 +233,7 @@ export class MotionOneDirective implements OnInit, OnDestroy, OnChanges, AfterCo
 
   // Method to override the delay for this directive
   overrideDelay(delay: number) {
-    console.log(`[${this.elementId}] Delay overridden: ${this.staggerDelay} -> ${delay}`);
+    //  console.log(`[${this.elementId}] Delay overridden: ${this.staggerDelay} -> ${delay}`);
     this.staggerDelay = delay;
   }
 
@@ -233,7 +242,7 @@ export class MotionOneDirective implements OnInit, OnDestroy, OnChanges, AfterCo
     // Get animation options
     const options = this.getAnimationOptions();
     
-    console.log(`[${this.elementId}] Running self animation with delay: ${options.delay}`);
+    //  console.log(`[${this.elementId}] Running self animation with delay: ${options.delay}`);
     
     // Extract only style properties for animation
     const targetStyles = this.extractStyleProperties(this.animate);
@@ -243,7 +252,7 @@ export class MotionOneDirective implements OnInit, OnDestroy, OnChanges, AfterCo
     Object.assign(this.el.nativeElement.style, startStyles);
     
     // Create animation
-    this.controls = animate(
+    this.controls = this.motionAnimation.animate(
       this.el.nativeElement as Target,
       targetStyles,
       options
@@ -274,6 +283,10 @@ export class MotionOneDirective implements OnInit, OnDestroy, OnChanges, AfterCo
     this.childrenControls.forEach(control => {
       if (control) control.stop();
     });
+
+
+    this.motionService.unregisterMotionElement(this);
+    console.log(`[${this.elementId}] Unregistered motionone directive`);
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -380,7 +393,14 @@ export class MotionOneDirective implements OnInit, OnDestroy, OnChanges, AfterCo
   private applyInitialStyles() {
     // Extract only style properties (exclude transition)
     const styles = this.extractStyleProperties(this.initial);
-    Object.assign(this.el.nativeElement.style, styles);
+    
+    // Apply initial styles immediately to prevent flash
+    if (styles && Object.keys(styles).length > 0) {
+      // Use requestAnimationFrame to ensure styles are applied before the element is visible
+      requestAnimationFrame(() => {
+        Object.assign(this.el.nativeElement.style, styles);
+      });
+    }
   }
 
   private applyAnimateStyles() {
@@ -411,7 +431,7 @@ export class MotionOneDirective implements OnInit, OnDestroy, OnChanges, AfterCo
 
   private getEasing(easingString: string | number[] | undefined) {
     if (!easingString) {
-      return easeInOut;
+      return this.motionAnimation.easeInOut;
     }
 
     if (Array.isArray(easingString)) {
@@ -420,13 +440,13 @@ export class MotionOneDirective implements OnInit, OnDestroy, OnChanges, AfterCo
     }
 
     const easingMap: Record<string, any> = {
-      'ease-in': easeIn,
-      'ease-out': easeOut,
-      'ease-in-out': easeInOut,
-      'ease': easeInOut // Default 'ease' to easeInOut
+      'ease-in': this.motionAnimation.easeIn,
+      'ease-out': this.motionAnimation.easeOut,
+      'ease-in-out': this.motionAnimation.easeInOut,
+      'ease': this.motionAnimation.easeInOut // Default 'ease' to easeInOut
     };
     
-    return easingMap[easingString] || easeInOut;
+    return easingMap[easingString] || this.motionAnimation.easeInOut;
   }
 
   private getAnimationOptions(targetState?: VariantWithTransition): AnimationOptions {
@@ -439,7 +459,7 @@ export class MotionOneDirective implements OnInit, OnDestroy, OnChanges, AfterCo
     // Always prioritize stagger delay over any other delay settings
     const delay = this.staggerDelay > 0 ? this.staggerDelay : (transitionObj.delay ?? this.delay);
     
-    console.log(`[${this.elementId}] Calculating animation options: staggerDelay=${this.staggerDelay}, transitionDelay=${transitionObj.delay}, inputDelay=${this.delay}, finalDelay=${delay}`);
+    //  console.log(`[${this.elementId}] Calculating animation options: staggerDelay=${this.staggerDelay}, transitionDelay=${transitionObj.delay}, inputDelay=${this.delay}, finalDelay=${delay}`);
     
     return {
       duration: transitionObj.duration ?? this.duration,
@@ -539,18 +559,37 @@ export class MotionOneDirective implements OnInit, OnDestroy, OnChanges, AfterCo
     });
     this.childrenControls = [];
 
-    // Apply start state immediately (excluding transition property)
-    if (resolvedStartState) {
-      const styles = this.extractStyleProperties(resolvedStartState);
-      Object.assign(this.el.nativeElement.style, styles);
-    }
-
     // Check if this is the initial animation to the animate state
     const isInitialAnimation = 
       (targetState === this.animate || 
        (typeof targetState === 'string' && this.variants?.[targetState] === this.animate));
 
-    // For initial animation, check if we need to handle staggered children
+    // Apply start state immediately (excluding transition property)
+    if (resolvedStartState) {
+      const styles = this.extractStyleProperties(resolvedStartState);
+      
+      // Apply initial styles immediately to prevent flash
+      if (styles && Object.keys(styles).length > 0) {
+        // Use requestAnimationFrame to ensure styles are applied before animation starts
+        requestAnimationFrame(() => {
+          Object.assign(this.el.nativeElement.style, styles);
+          
+          // Use another requestAnimationFrame to ensure the next frame has the styles applied
+          requestAnimationFrame(() => {
+            // Continue with animation after styles are applied
+            this.continueAnimation(resolvedTargetState, isInitialAnimation);
+          });
+        });
+        return; // Exit early, animation will continue in the callback
+      }
+    }
+    
+    // If no start state or no styles to apply, continue immediately
+    this.continueAnimation(resolvedTargetState, isInitialAnimation);
+  }
+
+  private continueAnimation(resolvedTargetState: VariantWithTransition, isInitialAnimation: boolean) {
+    // Check if this is the initial animation to the animate state
     if (isInitialAnimation && !this.initialAnimationPlayed) {
       const staggerValue = this.getStaggerValue();
       
@@ -575,7 +614,7 @@ export class MotionOneDirective implements OnInit, OnDestroy, OnChanges, AfterCo
     const targetStyles = this.extractStyleProperties(resolvedTargetState);
     
     // Create animation with Motion One for the element itself
-    this.controls = animate(
+    this.controls = this.motionAnimation.animate(
       this.el.nativeElement as Target,
       targetStyles,
       options
@@ -598,7 +637,7 @@ export class MotionOneDirective implements OnInit, OnDestroy, OnChanges, AfterCo
         }
         
         // Create child animation
-        const childControl = animate(
+        const childControl = this.motionAnimation.animate(
           child,
           targetStyles,
           options
@@ -639,48 +678,65 @@ export class MotionOneDirective implements OnInit, OnDestroy, OnChanges, AfterCo
   }
 
   runInitAnimation() {
-    if (this.initial && this.animate) {
-      // For child elements with stagger, make sure we use the stagger delay
-      if (this.isChild && this.staggerDelay > 0) {
-        console.log(`[${this.elementId}] Running staggered init animation with delay: ${this.staggerDelay}`);
-        
-        // Apply start state immediately
-        const startStyles = this.extractStyleProperties(this.initial);
-        Object.assign(this.el.nativeElement.style, startStyles);
-        
-        // Get animation options with stagger delay
-        const options = this.getAnimationOptions();
-        console.log(`[${this.elementId}] Animation options:`, options);
-        
-        // Extract only style properties for animation
-        const targetStyles = this.extractStyleProperties(this.animate);
-        
-        // Create animation with stagger delay
-        this.controls = animate(
-          this.el.nativeElement as Target,
-          targetStyles,
-          options
-        );
-        
-        this.initialAnimationPlayed = true;
-      } else {
-        // Normal animation without stagger
-        console.log(`[${this.elementId}] Running normal init animation, isChild=${this.isChild}, staggerDelay=${this.staggerDelay}`);
-        this.playAnimation(this.initial, this.animate);
-      }
+    if (!isPlatformBrowser(this.platformId) || !this.initial || !this.animate) return;
+    
+    // For child elements with stagger, make sure we use the stagger delay
+    if (this.isChild && this.staggerDelay > 0) {
+      //  console.log(`[${this.elementId}] Running staggered init animation with delay: ${this.staggerDelay}`);
+      
+      // Apply start state immediately
+      const startStyles = this.extractStyleProperties(this.initial);
+      Object.assign(this.el.nativeElement.style, startStyles);
+      
+      // Get animation options with stagger delay
+      const options = this.getAnimationOptions();
+      //  console.log(`[${this.elementId}] Animation options:`, options);
+      
+      // Extract only style properties for animation
+      const targetStyles = this.extractStyleProperties(this.animate);
+      
+      // Create animation with stagger delay
+      this.controls = this.motionAnimation.animate(
+        this.el.nativeElement as Target,
+        targetStyles,
+        options
+      );
+      
+      this.initialAnimationPlayed = true;
+    } else {
+      // Normal animation without stagger
+      //  console.log(`[${this.elementId}] Running normal init animation, isChild=${this.isChild}, staggerDelay=${this.staggerDelay}`);
+      this.playAnimation(this.initial, this.animate);
     }
   }
 
-  runExitAnimation() {
-    if (this.exit && Object.keys(this.exit).length > 0) {
-      // Use exit-specific transition if available, otherwise use global transition
-      const exitTransition = this.exit.transition || this.transition || {};
-      
+  runExitAnimation(): Promise<void> {
+    if (!isPlatformBrowser(this.platformId)) {
+      return Promise.resolve();
+    }
+    
+    // If no exit animation defined, resolve immediately
+    if (!this.exit || Object.keys(this.exit).length === 0) {
+      console.log(`[${this.elementId}] No exit animation defined, resolving immediately`);
+      return Promise.resolve();
+    }
+    
+    console.log(`[${this.elementId}] Running exit animation`);
+    
+    // Use exit-specific transition if available, otherwise use global transition
+    const exitTransition = this.exit.transition || this.transition || {};
+    
+    // Create a promise that resolves when the exit animation completes
+    return new Promise<void>((resolve) => {
       const exitOptions: AnimationOptions = {
         duration: exitTransition.duration ?? this.duration,
         delay: exitTransition.delay ?? this.exitDelay,
         ease: this.getEasing(exitTransition.ease ?? this.easing),
-        onComplete: () => this.animationComplete.emit()
+        onComplete: () => {
+          console.log(`[${this.elementId}] Exit animation completed`);
+          this.animationComplete.emit();
+          resolve();
+        }
       };
       
       // Stop any existing animation
@@ -696,13 +752,21 @@ export class MotionOneDirective implements OnInit, OnDestroy, OnChanges, AfterCo
       // Extract only style properties for animation (excluding transition)
       const exitStyles = this.extractStyleProperties(this.exit);
       
+      console.log(`[${this.elementId}] Starting exit animation with styles:`, exitStyles);
+      
       // Create exit animation
-      this.controls = animate(
+      this.controls = this.motionAnimation.animate(
         this.el.nativeElement as Target,
         exitStyles,
         exitOptions
       );
-    }
+      
+      // If no duration is set, resolve immediately
+      if (!exitOptions.duration) {
+        console.log(`[${this.elementId}] No duration set, resolving immediately`);
+        resolve();
+      }
+    });
   }
 
   cancel() {
@@ -719,11 +783,19 @@ export class MotionOneDirective implements OnInit, OnDestroy, OnChanges, AfterCo
   }
 
   getDuration(): number {
-    // Consider state-specific transition if available
-    const animateTransition = this.animate.transition || this.transition || {};
-    const duration = animateTransition.duration ?? this.duration;
-    const delay = animateTransition.delay ?? this.delay;
-    return (duration + delay) * 1000;
+    if (!isPlatformBrowser(this.platformId)) return 0;
+    
+    try {
+      // Consider state-specific transition if available
+      // Check transitions in order of priority: exit, animate, then default transition
+      const animateTransition = this.exit?.transition  || this.transition || {};
+      const duration = animateTransition.duration ?? this.duration;
+      const delay = animateTransition.delay ?? this.delay;
+      return (duration + delay) * 1000;
+    } catch (error) {
+      console.error('Error calculating duration:', error);
+      return 0;
+    }
   }
 
   getKeyByValue(object: any, key: any) {
@@ -733,7 +805,7 @@ export class MotionOneDirective implements OnInit, OnDestroy, OnChanges, AfterCo
   // Helper method for consistent logging
   private logDebug(message: string) {
     // Log to console
-    console.log(`[${this.elementId}] ${message}`);
+    //console.log(`[${this.elementId}] ${message}`);
     
     // Only add DOM elements in browser environment
     if (isPlatformBrowser(this.platformId)) {
@@ -787,5 +859,18 @@ export class MotionOneDirective implements OnInit, OnDestroy, OnChanges, AfterCo
     
     // Return original if no conversion needed
     return color;
+  }
+
+  // Add a method to manually trigger exit animation from outside
+  public triggerExitAnimation(): Promise<void> {
+    console.log(`[${this.elementId}] Manually triggering exit animation`);
+    return this.runExitAnimation();
+  }
+
+  // Add a listener for the custom exit event
+  @HostListener('motionExit')
+  onMotionExit() {
+    console.log(`[${this.elementId}] Received motionExit event`);
+    this.runExitAnimation();
   }
 }

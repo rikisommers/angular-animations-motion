@@ -43,7 +43,7 @@ export class AppComponent implements AfterViewInit {
     // Update max delay on navigation events
     this.router.events.subscribe((event: Event) => {
       if (event instanceof NavigationStart) {
-        this.motionService.runAllExitAnimations();
+       // this.motionService.runAllExitAnimations();
         console.log('Navigation started');
         const currentRoute = this.router.url;
         const targetRoute = (event as NavigationStart).url;

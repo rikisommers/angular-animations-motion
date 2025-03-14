@@ -2,8 +2,9 @@ import {
     Injectable,
     Inject,
     signal,
+    PLATFORM_ID
   } from '@angular/core';
-  import { DOCUMENT } from '@angular/common';
+  import { DOCUMENT, isPlatformBrowser } from '@angular/common';
   import { fromEvent, Subscription } from 'rxjs';
   import { throttleTime, debounceTime } from 'rxjs/operators';
   import { Router } from '@angular/router';
@@ -29,6 +30,7 @@ import {
     constructor(
       private router: Router,
       @Inject(DOCUMENT) private document: Document,
+      @Inject(PLATFORM_ID) private platformId: Object
     ) {
       this.setupScrollListener();
       this.scrollSubscription = new Subscription();
@@ -41,26 +43,30 @@ import {
     }
   
     private updateTotalExitDuration() {
+      if (!isPlatformBrowser(this.platformId)) return;
+      
       this.totalExitDuration = this.motionElements.reduce((total, element) => {
         return total + element.getDuration();
       }, 0);
     }
   
     private setupScrollListener() {
-      if (typeof window !== 'undefined') {
-        this.scrollSubscription = fromEvent(window, 'scroll')
-          .pipe(
-            throttleTime(16), // Limit to about 60fps
-            debounceTime(1), // Wait for scroll to settle
-          )
-          .subscribe(() => {
-            this.updateScrollProgress();
-          });
-        this.updateScrollProgress();
-      }
+      if (!isPlatformBrowser(this.platformId)) return;
+      
+      this.scrollSubscription = fromEvent(window, 'scroll')
+        .pipe(
+          throttleTime(16), // Limit to about 60fps
+          debounceTime(1), // Wait for scroll to settle
+        )
+        .subscribe(() => {
+          this.updateScrollProgress();
+        });
+      this.updateScrollProgress();
     }
   
     private updateScrollProgress() {
+      if (!isPlatformBrowser(this.platformId)) return;
+      
       const doc = this.document.documentElement;
       const scrollTop = window.scrollY || doc.scrollTop;
       const scrollHeight = doc.scrollHeight - doc.clientHeight;
@@ -88,18 +94,24 @@ import {
     }
   
     cancelAllAnimations() {
+      if (!isPlatformBrowser(this.platformId)) return;
+      
       this.motionElements.forEach((motion) => {
         motion.cancel();
       });
     }
   
     runAllEnterAnimations(): void {
+      if (!isPlatformBrowser(this.platformId)) return;
+      
       this.motionElements.forEach((motion) => {
         motion.runInitAnimation();
       });
     }
   
     runAllExitAnimations(): void {
+      if (!isPlatformBrowser(this.platformId)) return;
+      
       // Proceed with the exit animations
       this.motionElements.forEach((motion) => {
         motion.runExitAnimation();
@@ -107,6 +119,8 @@ import {
     }
   
     runAllEnterAnimationsForRoute(route: string): MotionElement[] {
+      if (!isPlatformBrowser(this.platformId)) return [];
+      
       const enterAnimations = this.getAllElementsByRoute(route).map((motion) => {
         motion.runInitAnimation();
         return motion;
@@ -114,21 +128,50 @@ import {
       return enterAnimations;
     }
     
-    getLongestExitDuration(): number {
-      const durations = this.motionElements.map((motion) => motion.getDuration());
-      return durations.length > 0 ? Math.max(...durations) : 0;
+    getLongestExitDurationForRoute(route: string): number {
+      if (!isPlatformBrowser(this.platformId)) return 0;
+      
+      console.log(`[MotionOneService] LEDFR: ${this.motionElements.length} elements for route ${route}`);
+      
+      if (this.motionElements.length === 0) {
+        console.log('[MotionOneService] No motion elements registered');
+        return 0;
+      }
+      
+      const durations = this.getAllElementsByRoute(route).map((motion) => {
+        const duration = motion.getDuration();
+       console.log(`[MotionOneService] LEDFR Duration: ${duration}`);
+       return duration;
+      });
+      
+      const maxDuration = durations.length > 0 ? Math.max(...durations) : 0;
+      //console.log(`[MotionOneService] Longest exit duration: ${maxDuration}`);
+      return maxDuration;
     }
+
+   
   
     getLongestEnterDuration(): number {
-      const durations = this.motionElements.map((motion) => motion.getDuration());
-      return durations.length > 0 ? Math.max(...durations) : 0;
+      if (!isPlatformBrowser(this.platformId)) return 0;
+      
+      //console.log(`[MotionOneService] Getting longest enter duration from ${this.motionElements.length} elements`);
+      
+      if (this.motionElements.length === 0) {
+        //console.log('[MotionOneService] No motion elements registered');
+        return 0;
+      }
+      
+      const durations = this.motionElements.map((motion) => {
+        const duration = motion.getDuration();
+       // console.log(`[MotionOneService] Element ${motion.elementId} has duration: ${duration}`);
+        return duration;
+      });
+      
+      const maxDuration = durations.length > 0 ? Math.max(...durations) : 0;
+      console.log(`[MotionOneService] Longest enter duration: ${maxDuration}`);
+      return maxDuration;
     }
   
-    getLongestDurationForRoute(): number {
-      const route = this.router.url;
-      const elements = this.getAllElementsByRoute(route);
-      const durations = elements.map((motion) => motion.getDuration());
-      return durations.length > 0 ? Math.max(...durations) : 0;
-    }
+   
   }
   

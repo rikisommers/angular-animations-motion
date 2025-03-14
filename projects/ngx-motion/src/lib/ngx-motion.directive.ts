@@ -79,7 +79,24 @@ export class MotionDirective implements OnDestroy, OnChanges {
   }
 
   ngOnDestroy() {
+
+    if (this.player) {
+      this.player.destroy();
+      this.player = null;
+    }
+    // Ensure the element is properly unregistered from the service
+    if (this.motionService) {
+      try {
+        this.motionService.unregisterMotionElement(this);
+        console.error('succefully unregistered motion element:');
+
+      } catch (error) {
+        console.error('Failed to unregister motion element:', error);
+      }
+    }
+
     if (this.exit && Object.keys(this.exit).length > 0) {
+      console.log('running exit animation from element', this.el.nativeElement);
        this.runExitAnimation();
     }
 

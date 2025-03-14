@@ -11,5 +11,7 @@ import { MotionOneDirective } from 'ngx-motion';
   styleUrl: './work.component.scss'
 })
 export class WorkComponent {
-
+  constructor() {
+    console.log('Work component initialized');
+  }
 }

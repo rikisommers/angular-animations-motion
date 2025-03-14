@@ -1,31 +1,38 @@
-
 <div class="grid grid-cols-[300px_1fr]">
 
   <nav class="bg-gray-100 flex flex-grow p-16">
 
     <ul>
       <li>
-        <a href="/">
+        <button [routerLink]="['/']" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
             Home
-        </a>
+        </button>
       </li>
       <li>
-        <a href="/work">
+        <a [routerLink]="['/work']" routerLinkActive="active">
             Work
         </a>
       </li>
       <li>
-        <a href="/play">
+        <a [routerLink]="['/play']" routerLinkActive="active">
             Play
         </a>
       </li>
-      
     </ul>
   </nav>
 
   <main class="p-16 flex flex-col flex-grow bg-slate-100">
     <h1>App Component</h1>
-    <router-outlet />  
+
+    <!-- The router-outlet must be a direct child of motion-one-presence -->
+    <div class="router-container" style="position: relative; flex-grow: 1;">
+      <motion-one-presence mode="wait">
+        <router-outlet></router-outlet>
+      </motion-one-presence>
+    </div>
   </main>
     
 </div>
+
+<!-- Debug component -->
+<animation-debug></animation-debug>

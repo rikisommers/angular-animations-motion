@@ -1,152 +1,29 @@
-<p>play works!</p>
 <div
   motionone
   [initial]="{
     opacity: 0,
+    scale: 0.8,
+    backgroundColor: 'green'
   }"
-  [staggerChildren]="0.5"
-  [staggerDirection]="0"
   [animate]="{
     opacity: 1,
+    scale: 1,
+    backgroundColor: '#666',
     transition: {
-      duration: 3,
-      delay: 0,
-      staggerChildren: 0.5,
-      ease: 'ease-in-out',
-    },
+      duration: 0.7,
+      ease: 'ease-out'
+    }
   }"
-  class="absolute top-0 left-0 w-full h-full grid grid-cols-3 grid-rows-3 gap-4"
->
-  <div
-    motionone
-    [initial]="{
-      backgroundColor: 'red',
-      scale: 1,
-      height: '50px',
-      transform: 'translateX(0px)',
-    }"
-    [animate]="{
-      backgroundColor: 'aqua',
-      scale: 1,
-      height: '100px',
-      transform: 'translateX(100px)',
-    }"
-    [duration]="1"
-    class="w-10 h-10 col-span-1 row-span-1"
-  >
-    Hello
-  </div>
-  <div
-    motionone
-    [initial]="{
-      backgroundColor: 'red',
-      height: '50px',
-      transform: 'translateX(0px)',
-    }"
-    [animate]="{
-      backgroundColor: 'aqua',
-      scale: 1,
-      height: '100px',
-      transform: 'translateX(100px)',
-    }"
-    [duration]="1"
-    class="w-10 h-10 col-span-1 row-span-1"
-  >
-    Hello
-  </div>
-  <div
-    motionone
-    [initial]="{
-      backgroundColor: 'red',
-      scale: 1,
-      height: '50px',
-      transform: 'translateX(0px)',
-    }"
-    [animate]="{
-      backgroundColor: 'aqua',
-      scale: 1,
-      height: '100px',
-      transform: 'translateX(100px)',
-    }"
-    [duration]="1"
-    class="w-10 h-10 col-span-1 row-span-1"
-  >
-    Hello
-  </div>
-</div>
-
-<div
-  motionone
-  [initial]="{
+  [exit]="{
     opacity: 0,
-  }"
-  [staggerChildren]="0.5"
-  [staggerDirection]="1"
-  [animate]="{
-    opacity: 1,
+    scale: 1.2,
+    backgroundColor: 'red',
     transition: {
-      duration: 3,
-      delay: 0,
-      staggerChildren: 0.5,
-      ease: 'ease-in-out',
-    },
+      duration: 0.5,
+      ease: 'ease-in'
+    }
   }"
   class="absolute top-0 left-0 w-full h-full grid grid-cols-3 grid-rows-3 gap-4"
 >
-  <div
-    motionone
-    [initial]="{
-      backgroundColor: 'red',
-      scale: 1,
-      height: '50px',
-      transform: 'translateX(0px)',
-    }"
-    [animate]="{
-      backgroundColor: 'aqua',
-      scale: 1,
-      height: '100px',
-      transform: 'translateX(100px)',
-    }"
-    [duration]="1"
-    class="w-10 h-10 col-span-1 row-span-1"
-  >
-    Hello
-  </div>
-  <div
-    motionone
-    [initial]="{
-      backgroundColor: 'red',
-      height: '50px',
-      transform: 'translateX(0px)',
-    }"
-    [animate]="{
-      backgroundColor: 'aqua',
-      scale: 1,
-      height: '100px',
-      transform: 'translateX(100px)',
-    }"
-    [duration]="1"
-    class="w-10 h-10 col-span-1 row-span-1"
-  >
-    Hello
-  </div>
-  <div
-    motionone
-    [initial]="{
-      backgroundColor: 'red',
-      scale: 1,
-      height: '50px',
-      transform: 'translateX(0px)',
-    }"
-    [animate]="{
-      backgroundColor: 'aqua',
-      scale: 1,
-      height: '100px',
-      transform: 'translateX(100px)',
-    }"
-    [duration]="1"
-    class="w-10 h-10 col-span-1 row-span-1"
-  >
-    Hello
-  </div>
+  <h1 class="text-white text-3xl">Play</h1>
 </div>

@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { MotionOneDirective } from 'ngx-motion';
+
 @Component({
   selector: 'app-home',
   imports: [
@@ -13,5 +14,7 @@ import { MotionOneDirective } from 'ngx-motion';
   }
 })
 export class HomeComponent {
-
+  constructor() {
+    console.log('Home component initialized');
+  }
 }

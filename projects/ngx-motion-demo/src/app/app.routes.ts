@@ -1,8 +1,7 @@
 import { Routes } from '@angular/router';
-import { AppComponent } from './app.component';
+import { HomeComponent } from './home/home.component';
 import { WorkComponent } from './work/work.component';
 import { PlayComponent } from './play/play.component';
-import { HomeComponent } from './home/home.component';
 import { AnimationGuard } from '../../../ngx-motion/src/lib/guards/animation-guard';
 
 export const routes: Routes = [
@@ -20,5 +19,10 @@ export const routes: Routes = [
     path: 'play',
     component: PlayComponent,
     canDeactivate: [AnimationGuard]
+  },
+  // Wildcard route to catch all routes
+  {
+    path: '**',
+    redirectTo: ''
   }
 ];

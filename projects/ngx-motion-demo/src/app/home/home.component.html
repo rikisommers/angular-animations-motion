@@ -1,13 +1,29 @@
 <div
   motionone
   [initial]="{
-    backgroundColor: '#333',
+    opacity: 0,
+    y: -50,
+    backgroundColor: '#FEFEFE'
   }"
   [animate]="{
+    opacity: 1,
+    y: 0,
     backgroundColor: '#666',
+    transition: {
+      duration: 0.8,
+      ease: 'ease-out'
+    }
+  }"
+  [exit]="{
+    opacity: 1,
+    y: 50,
+    backgroundColor: 'red',
+    transition: {
+      duration: 2,
+      ease: 'ease-in-out'
+    }
   }"
   class="absolute top-0 left-0 w-full h-full grid grid-cols-3 grid-rows-3 gap-4"
 >
-
-<h1>Home</h1>
+  <h1 class="text-white text-3xl">Home</h1>
 </div>

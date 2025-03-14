@@ -11,5 +11,7 @@ import { MotionOneDirective } from 'ngx-motion';
   standalone: true,
 })
 export class PlayComponent {
-
+  constructor() {
+    console.log('Play component initialized');
+  }
 }

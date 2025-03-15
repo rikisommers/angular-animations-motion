@@ -274,7 +274,7 @@ export class MotionDirective implements OnDestroy, OnChanges {
   runInitAnimation() {
     if (this.initial && this.animate) {
       this.playAnimation(this.initial, this.animate);
-      //this.animationComplete.emit();
+      //\this.animationComplete.emit();
     }
   }
 

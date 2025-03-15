@@ -1,25 +1,32 @@
 <div
   motionone
   [initial]="{
-    opacity: 0,
-    scale: 0.8,
+    opacity: 1,
+    y: 100,
     backgroundColor: 'green'
   }"
+  [duration]="3"
+  [easing]="'ease-in'"
   [animate]="{
     opacity: 1,
-    scale: 1,
+    y: 0,
     backgroundColor: 'hotpink',
+  }"
+  [transition]="{
+    duration: 3,
+    ease: 'ease-in'
   }"
   [exit]="{
     opacity: 0,
     scale: 1.2,
+    y: 100,
     backgroundColor: 'red',
     transition: {
-      duration: 0.5,
+      duration: 3,
       ease: 'ease-in'
     }
   }"
-  class="absolute top-0 left-0 w-full h-full grid grid-cols-3 grid-rows-3 gap-4"
+  class="w-full h-full grid grid-cols-3 grid-rows-3 gap-4"
 >
   <h1 class="text-white text-3xl">Play</h1>
 </div>

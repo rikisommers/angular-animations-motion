@@ -1,26 +1,26 @@
-
 <div
   motionone
   [initial]="{
     opacity: 0,
-    scale: 0.8,
-    backgroundColor: 'blue'
+    y: 100,
+    backgroundColor: 'yelluw'
   }"
   [animate]="{
     opacity: 1,
-    scale: 1,
-    backgroundColor: 'aqua',
+    y: 0,
+    backgroundColor: 'green',
   }"
   [exit]="{
     opacity: 0,
     scale: 1.2,
+    y: 100,
     backgroundColor: 'red',
     transition: {
-      duration: 0.5,
+      duration: 3,
       ease: 'ease-in'
     }
   }"
-  class="absolute top-0 left-0 w-full h-full grid grid-cols-3 grid-rows-3 gap-4"
+  class="w-full h-full grid grid-cols-3 grid-rows-3 gap-4"
 >
-  <h1 class="text-white text-3xl">WWWWORK</h1>
+  <h1 class="text-white text-3xl">Work</h1>
 </div>

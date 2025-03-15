@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { MotionOneDirective } from 'ngx-motion';
+import { MotionOneDirective } from '../../directives/motion-one.directive';
 
 @Component({
   selector: 'app-work',
@@ -12,6 +12,6 @@ import { MotionOneDirective } from 'ngx-motion';
 })
 export class WorkComponent {
   constructor() {
-    console.log('Work component initialized');
+  //  console.log('Work component initialized');
   }
 }

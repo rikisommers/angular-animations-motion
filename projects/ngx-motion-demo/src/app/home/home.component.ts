@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
-import { MotionOneDirective } from 'ngx-motion';
-import { MotionIfDirective } from 'ngx-motion';
+import { MotionOneDirective } from '../../directives/motion-one.directive';
+import { MotionIfDirective } from '../../directives/motion-if.directive';
 
 type VariantName = 'hidden' | 'visible';
 

@@ -24,13 +24,10 @@
 
     <!-- The router-outlet must be a direct child of motion-one-presence -->
     <div class="router-container" style="position: relative; flex-grow: 1;">
-      <motion-one-presence mode="wait">
+      <motion-one-presence #motionPresence mode="wait">
         <router-outlet></router-outlet>
       </motion-one-presence>
     </div>
   </main>
     
 </div>
-
-<!-- Debug component -->
-<animation-debug></animation-debug>

@@ -131,7 +131,7 @@ export class MotionOneDirective implements OnInit, OnDestroy, OnChanges, AfterCo
       if (!this.isChild) {
         setTimeout(() => {
      //     console.log(`[${this.elementId}] Auto-playing initial animation after routeDelay=${this.routeDelay}`);
-          this.playAnimation(this.initial, this.animate);
+        //  this.playAnimation(this.initial, this.animate);
         }, this.routeDelay);
       }
     }
@@ -705,7 +705,7 @@ export class MotionOneDirective implements OnInit, OnDestroy, OnChanges, AfterCo
       this.initialAnimationPlayed = true;
     } else {
       // Normal animation without stagger
-      //  console.log(`[${this.elementId}] Running normal init animation, isChild=${this.isChild}, staggerDelay=${this.staggerDelay}`);
+        console.log(`[${this.elementId}] Running normal init animation, isChild=${this.isChild}, staggerDelay=${this.staggerDelay}`);
       this.playAnimation(this.initial, this.animate);
     }
   }

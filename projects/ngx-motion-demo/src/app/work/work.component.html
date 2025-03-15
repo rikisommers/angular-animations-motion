@@ -3,24 +3,25 @@
   motionone
   [initial]="{
     opacity: 0,
-    scale: 0.8,
     backgroundColor: 'blue'
   }"
   [animate]="{
     opacity: 1,
-    scale: 1,
     backgroundColor: 'aqua',
-  }"
-  [exit]="{
-    opacity: 0,
-    scale: 1.2,
-    backgroundColor: 'red',
     transition: {
-      duration: 0.5,
+      duration: .2,
       ease: 'ease-in'
     }
   }"
-  class="absolute top-0 left-0 w-full h-full grid grid-cols-3 grid-rows-3 gap-4"
+  [exit]="{
+    opacity: 0,
+    backgroundColor: 'red',
+    transition: {
+      duration: 0.3,
+      ease: 'ease-in'
+    }
+  }"
+  class=" w-full h-full grid grid-cols-3 grid-rows-3 gap-4"
 >
   <h1 class="text-white text-3xl">WWWWORK</h1>
 </div>

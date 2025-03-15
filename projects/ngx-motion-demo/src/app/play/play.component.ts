@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { MotionOneDirective } from 'ngx-motion';
+import { MotionOneDirective } from '../../directives/motion-one.directive';
 
 @Component({
   selector: 'app-play',
@@ -12,6 +12,6 @@ import { MotionOneDirective } from 'ngx-motion';
 })
 export class PlayComponent {
   constructor() {
-    console.log('Play component initialized');
+    //console.log('Play component initialized');
   }
 }

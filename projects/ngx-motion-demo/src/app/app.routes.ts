@@ -2,7 +2,7 @@ import { Routes } from '@angular/router';
 import { HomeComponent } from './home/home.component';
 import { WorkComponent } from './work/work.component';
 import { PlayComponent } from './play/play.component';
-import { AnimationGuard } from '../../../ngx-motion/src/lib/guards/animation-guard';
+import { AnimationGuard } from '../directives/animation-guard';
 
 export const routes: Routes = [
   {

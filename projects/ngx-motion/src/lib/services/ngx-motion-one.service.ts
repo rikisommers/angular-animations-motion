@@ -104,6 +104,7 @@ import {
     runAllEnterAnimations(): void {
       if (!isPlatformBrowser(this.platformId)) return;
       
+      console.log('running all enter animations');
       this.motionElements.forEach((motion) => {
         motion.runInitAnimation();
       });
@@ -118,6 +119,17 @@ import {
       });
     }
   
+    runAllExitAnimationsForRoute(route: string): MotionElement[] {
+      if (!isPlatformBrowser(this.platformId)) return [];
+      
+      const exitAnimations = this.getAllElementsByRoute(route).map((motion) => {
+        motion.runExitAnimation();
+        return motion;
+      });
+      return exitAnimations;
+    }
+    
+
     runAllEnterAnimationsForRoute(route: string): MotionElement[] {
       if (!isPlatformBrowser(this.platformId)) return [];
       

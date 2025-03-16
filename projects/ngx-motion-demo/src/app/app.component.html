@@ -1,33 +1,13 @@
-<div class="grid grid-cols-[300px_1fr]">
-  <nav class="bg-gray-100 flex flex-grow p-16">
-    <ul>
-      <li>
-        <button [routerLink]="['/']" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
-            Home
-        </button>
-      </li>
-      <li>
-        <a [routerLink]="['/work']" routerLinkActive="active">
-            Work
-        </a>
-      </li>
-      <li>
-        <a [routerLink]="['/play']" routerLinkActive="active">
-            Play
-        </a>
-      </li>
-    </ul>
+<div class="app-container">
+  <!-- Navigation -->
+  <nav class="navigation">
+    <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Home</a>
+    <a routerLink="/work" routerLinkActive="active">Work</a>
+    <a routerLink="/play" routerLinkActive="active">Play</a>
   </nav>
 
-  <main class="p-16 flex flex-col flex-grow bg-slate-100">
-    <h1>App Component</h1>
-
-    <!-- The router-outlet must be a direct child of motion-one-presence -->
-    <div class="router-container" style="position: relative; flex-grow: 1;">
-      <motion-one-presence #motionPresence mode="wait">
-        <router-outlet></router-outlet>
-      </motion-one-presence>
-    </div>
+  <!-- Main content with our animation router outlet wrapper -->
+  <main class="content">
+    <animation-router-outlet></animation-router-outlet>
   </main>
-    
 </div>

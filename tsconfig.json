@@ -16,12 +16,12 @@
       "my-lib": [
         "dist/my-lib"
       ],
-      "ng-motion": [
-        "dist/ng-motion"
-      ],
-      "ngx-motion": [
-        "dist/ngx-motion"
-      ]
+      // "ng-motion": [
+      //   "dist/ng-motion"
+      // ],
+      // "ngx-motion": [
+      //   "dist/ngx-motion"
+      // ]
     },
     "declaration": false,
     "downlevelIteration": true,

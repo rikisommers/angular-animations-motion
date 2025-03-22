@@ -16,6 +16,6 @@ export const appConfig: ApplicationConfig = {
     provideAnimations(), // Required for animations to work
     
     // Route Reuse Strategy for animations
-    { provide: RouteReuseStrategy, useClass: AnimationRouteReuseStrategy }
+    // { provide: RouteReuseStrategy, useClass: AnimationRouteReuseStrategy }
   ]
 };

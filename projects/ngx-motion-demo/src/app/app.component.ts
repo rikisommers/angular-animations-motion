@@ -1,21 +1,33 @@
-import { Component } from '@angular/core';
-import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
-import { AnimationRouterOutletComponent } from '../directives/animation-router-outlet.component';
+import 'zone.js';
+import { Component, inject, input, computed, NgZone } from '@angular/core';
+import { RouterLink, 
+  RouterLinkActive, 
+  RouterOutlet,
+  ViewTransitionInfo,
+  withComponentInputBinding,
+  withViewTransitions,
 
+ } from '@angular/router';
+import { AnimationRouterOutletComponent } from '../directives/animation-router-outlet.component';
+import { MotionOnePresenceComponent } from '../directives/motion-one-presence.component';
+import { PageTransitionComponent } from './components/transition/page-transition/page-transition.component';
+import { MotionOneService } from 'ngx-motion';
 @Component({
   selector: 'app-root',
   standalone: true,
   imports: [
-    RouterOutlet,
     RouterLink,
+    RouterOutlet,
     RouterLinkActive,
-    AnimationRouterOutletComponent
+    PageTransitionComponent,
+    AnimationRouterOutletComponent,
+
   ],
+  
   templateUrl: './app.component.html',
-  styleUrl: './app.component.scss'
+  styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
-  constructor() {
-    console.log('App component initialized');
-  }
+  title = 'ngx-motion-demo';
 }
+

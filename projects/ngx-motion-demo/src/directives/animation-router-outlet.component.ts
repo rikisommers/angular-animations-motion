@@ -1,21 +1,42 @@
-import { Component, OnInit, OnDestroy, ViewChild, ElementRef, AfterViewInit, Renderer2 } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef, AfterViewInit, Renderer2, Input } from '@angular/core';
 import { RouterOutlet, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { AnimationRouterService } from '../services/animation-router.service';
 import { MotionOneService } from '../services/motion-one.service';
+import { NgIf } from '@angular/common';
+export type AnimationMode = 'wait' | 'sync';
 
 /**
  * A component that wraps the router outlet and handles animation timing
- * for all child elements. This provides a centralized way to delay
- * entry animations until exit animations are complete.
+ * for all child elements. Supports two modes:
+ * - wait: Delays entry animations until exit animations complete (default)
+ * - sync: Allows exit and entry animations to run simultaneously
  */
 @Component({
   selector: 'animation-router-outlet',
   standalone: true,
-  imports: [RouterOutlet],
+  imports: [RouterOutlet, NgIf],
   template: `
-    <div class="animation-router-container">
-      <router-outlet (activate)="onActivate($event)"></router-outlet>
+    <div class="animation-router-container" [class.sync-mode]="mode === 'sync'">
+      <!-- Container for the exiting view when in sync mode -->
+      <div 
+        *ngIf="mode === 'sync'" 
+        #exitingView 
+        class="router-view exiting-view" 
+        [style.display]="previousComponent ? 'block' : 'none'"
+      >
+      <h1>Fuck</h1>
+        <ng-container #exitingContainer></ng-container>
+      </div>
+      
+      <!-- Main router outlet container -->
+      <div [class]="mode === 'sync' ? 'router-view entering-view' : ''">
+      <h1 class="text-white">Fuckddd</h1>
+        <router-outlet 
+          (activate)="onActivate($event)" 
+          (deactivate)="onDeactivate($event)"
+        ></router-outlet>
+      </div>
     </div>
   `,
   styles: [`
@@ -25,19 +46,56 @@ import { MotionOneService } from '../services/motion-one.service';
       height: 100%;
       overflow: hidden;
     }
+
+    .animation-router-container.sync-mode {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      overflow: visible;
+    }
+
+    .router-view {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    .sync-mode .router-view {
+      position: relative;
+      width: 100%;
+      height: 100%;
+    }
+
+    .sync-mode .exiting-view {
+      opacity: 1;
+      transform: none;
+    }
+
+    .sync-mode .entering-view {
+      opacity: 1;
+      transform: none;
+    }
   `]
 })
 export class AnimationRouterOutletComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild(RouterOutlet) routerOutlet!: RouterOutlet;
+  @ViewChild('exitingContainer', { static: false }) exitingContainer?: ElementRef;
+  @ViewChild('exitingView') exitingView?: ElementRef;
+  
+  @Input() mode: AnimationMode = 'sync';
   
   private subscription = new Subscription();
   private currentComponent: any = null;
-  private previousComponent: any = null;
+  previousComponent: any = null;
   private isAnimating = false;
   private currentRoute: string = '';
+  private exitingRoute: string = '';
   
   // Track all motion elements in the current view
   private currentMotionElements: HTMLElement[] = [];
+  private exitingMotionElements: HTMLElement[] = [];
   
   constructor(
     private animationRouterService: AnimationRouterService,
@@ -46,24 +104,28 @@ export class AnimationRouterOutletComponent implements OnInit, OnDestroy, AfterV
     private el: ElementRef,
     private router: Router
   ) {
-    // Get the current route
     this.currentRoute = this.router.url;
   }
   
   ngOnInit(): void {
-    // Subscribe to animation state changes
+    console.log('[AnimationRouterOutlet] Current mode:', this.mode);
+    
     this.subscription.add(
       this.animationRouterService.animating$.subscribe(isAnimating => {
         this.isAnimating = isAnimating;
         
-        if (!isAnimating) {
-          // Exit animations are complete, show the entering elements
-          this.showEnteringElements();
+        if (this.mode === 'wait') {
+          if (!isAnimating) {
+            this.showEnteringElements();
+          }
+        } else {
+          if (!isAnimating) {
+            this.cleanupExitingView();
+          }
         }
       })
     );
     
-    // Subscribe to router events to track the current route
     this.subscription.add(
       this.router.events.subscribe(event => {
         if (event.constructor.name === 'NavigationEnd') {
@@ -74,7 +136,6 @@ export class AnimationRouterOutletComponent implements OnInit, OnDestroy, AfterV
   }
   
   ngAfterViewInit(): void {
-    // Initial setup
     setTimeout(() => {
       this.findAndPrepareMotionElements();
     }, 0);
@@ -84,110 +145,156 @@ export class AnimationRouterOutletComponent implements OnInit, OnDestroy, AfterV
     this.subscription.unsubscribe();
   }
   
-  /**
-   * Called when a new component is activated by the router
-   */
   onActivate(component: any): void {
-    console.log('[AnimationRouterOutlet] Component activated:', component);
+   // console.log('[AnimationRouterOutlet] Component activated:', component);
     
-    // Store the previous component
-    this.previousComponent = this.currentComponent;
+    // if (this.mode === 'sync' && this.currentComponent) {
+    //   this.previousComponent = this.currentComponent;
+    //   this.exitingRoute = this.currentRoute;
+    //   this.moveToExitingView(this.previousComponent);
+    //   // Immediately prepare both views without setTimeout
+    //   this.findAndPrepareMotionElements();
+    //   this.findAndPrepareExitingMotionElements();
+    // } else {
+      this.previousComponent = this.currentComponent;
+      setTimeout(() => {
+        this.findAndPrepareMotionElements();
+      }, 0);
+    // }
+    
     this.currentComponent = component;
-    
-    // Find and prepare motion elements in the new component
-    setTimeout(() => {
-      this.findAndPrepareMotionElements();
-    }, 0);
   }
   
-  /**
-   * Find all elements with the motionone directive and prepare them for animation
-   */
+  onDeactivate(component: any): void {
+    console.log('[AnimationRouterOutlet] Component deactivated:', component);
+  }
+  
+  private moveToExitingView(component: any): void {
+    if (!this.exitingContainer || !component) return;
+    
+    try {
+      const element = this.el.nativeElement.querySelector('.router-view:not(.exiting-view)');
+      if (!element) return;
+      
+      const clone = element.cloneNode(true);
+      
+      while (this.exitingContainer.nativeElement.firstChild) {
+        this.exitingContainer.nativeElement.firstChild.remove();
+      }
+      
+      this.exitingContainer.nativeElement.appendChild(clone);
+      
+      if (this.exitingView?.nativeElement) {
+        this.renderer.setStyle(this.exitingView.nativeElement, 'display', 'block');
+      }
+    } catch (error) {
+      console.error('[AnimationRouterOutlet] Error moving component to exiting view:', error);
+    }
+  }
+  
+  private findAndPrepareExitingMotionElements(): void {
+    this.exitingMotionElements = [];
+    
+    if (!this.exitingView?.nativeElement) return;
+    
+    const motionElements = this.exitingView.nativeElement.querySelectorAll('[motionone]');
+    
+    motionElements.forEach((element: HTMLElement) => {
+      this.exitingMotionElements.push(element);
+      
+      // Get the exit animation properties from the element
+      const exitAnimation = element.getAttribute('exit');
+      if (exitAnimation) {
+        // Trigger exit animation on the cloned element
+        const exitDuration = this.motionService.getLongestExitDurationForRoute(this.exitingRoute) || 0;
+        this.renderer.setAttribute(element, 'data-exiting', 'true');
+        
+        // Let the motion-one directive handle the exit animation
+        // It will pick up the data-exiting attribute and run the exit animation
+      }
+    });
+    
+    console.log(`[AnimationRouterOutlet] Found ${this.exitingMotionElements.length} exiting motion elements`);
+  }
+  
   private findAndPrepareMotionElements(): void {
-    // Clear previous elements
     this.currentMotionElements = [];
     
-    // Find all elements with the motionone attribute
-    const container = this.el.nativeElement.querySelector('.animation-router-container');
+    const container = this.el.nativeElement.querySelector('.router-view:not(.exiting-view)');
     if (!container) return;
     
     const motionElements = container.querySelectorAll('[motionone]');
     
-    // Hide all motion elements initially
     motionElements.forEach((element: HTMLElement) => {
       this.currentMotionElements.push(element);
       
-      // Only hide elements if we're in the middle of a navigation
-      if (this.isAnimating) {
+      if (this.mode === 'wait' && this.isAnimating) {
         this.hideElement(element);
       }
     });
     
+    
     console.log(`[AnimationRouterOutlet] Found ${this.currentMotionElements.length} motion elements`);
   }
   
-  /**
-   * Hide an element by setting its initial state
-   */
   private hideElement(element: HTMLElement): void {
-    // Set initial styles - hidden but in the DOM
     this.renderer.setStyle(element, 'opacity', '0');
     this.renderer.setStyle(element, 'transform', 'translateY(20px)');
     this.renderer.setStyle(element, 'transition', 'none');
     this.renderer.setStyle(element, 'will-change', 'opacity, transform');
-    
-    // Add a data attribute to mark this element as hidden
     this.renderer.setAttribute(element, 'data-motion-hidden', 'true');
   }
   
-  /**
-   * Show all entering elements with a staggered delay
-   */
   private showEnteringElements(): void {
-    // Extract route path from URL
     const routePath = this.getRoutePathFromUrl(this.currentRoute);
     
-    // Get the exit duration for the current route
-    const exitDuration = this.motionService.getLongestExitDurationForRoute(routePath) || 0;
-    
-    // Base delay in milliseconds (after exit animations complete)
-    const baseDelay = 100;
-    
-    // Stagger delay between elements in milliseconds
-    const staggerDelay = 50;
-    
-    // Show each element with a staggered delay
-    this.currentMotionElements.forEach((element: HTMLElement, index: number) => {
-      // Only show elements that are hidden
+    this.currentMotionElements.forEach((element: HTMLElement) => {
       if (element.getAttribute('data-motion-hidden') !== 'true') return;
       
-      // Calculate delay for this element
-      const delay = baseDelay + (index * staggerDelay);
-      
-      // Set transition properties
-      this.renderer.setStyle(
-        element, 
-        'transition', 
-        `opacity 0.5s ease-out ${delay/1000}s, transform 0.5s ease-out ${delay/1000}s`
-      );
-      
-      // Apply final styles after a small delay to ensure transition works
-      setTimeout(() => {
+      if (this.mode === 'sync') {
+        // In sync mode, show elements immediately without delays
+        this.renderer.setStyle(element, 'transition', 'opacity 0.5s ease-out, transform 0.5s ease-out');
         this.renderer.setStyle(element, 'opacity', '1');
         this.renderer.setStyle(element, 'transform', 'translateY(0)');
         this.renderer.removeAttribute(element, 'data-motion-hidden');
-      }, 10);
+      } else {
+        // In wait mode, keep the original staggered behavior
+        const baseDelay = 100;
+        const staggerDelay = 50;
+        const delay = baseDelay + (this.currentMotionElements.indexOf(element) * staggerDelay);
+        
+        this.renderer.setStyle(
+          element, 
+          'transition', 
+          `opacity 0.5s ease-out ${delay}ms, transform 0.5s ease-out ${delay}ms`
+        );
+        
+        setTimeout(() => {
+          this.renderer.setStyle(element, 'opacity', '1');
+          this.renderer.setStyle(element, 'transform', 'translateY(0)');
+          this.renderer.removeAttribute(element, 'data-motion-hidden');
+        }, 10);
+      }
     });
   }
   
-  /**
-   * Extract the route path from a URL
-   */
-  private getRoutePathFromUrl(url: string): string {
-    // Remove query parameters and hash
-    const path = url.split('?')[0].split('#')[0];
+  private cleanupExitingView(): void {
+    if (!this.exitingView?.nativeElement) return;
     
-    // Remove leading slash
+    this.renderer.setStyle(this.exitingView.nativeElement, 'display', 'none');
+    
+    if (this.exitingContainer?.nativeElement) {
+      while (this.exitingContainer.nativeElement.firstChild) {
+        this.exitingContainer.nativeElement.firstChild.remove();
+      }
+    }
+    
+    this.previousComponent = null;
+    this.exitingMotionElements = [];
+  }
+  
+  private getRoutePathFromUrl(url: string): string {
+    const path = url.split('?')[0].split('#')[0];
     return path.startsWith('/') ? path.substring(1) : path;
   }
 } 

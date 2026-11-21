@@ -1,27 +1,36 @@
+<app-page-transition/>
+
+<h1  style="view-transition-name: state; position:absolute;bottom:40px; left:40px; padding:20px; background:hotpink;">State</h1>
+
 <div
   motionone
   [initial]="{
     opacity: 1,
-    backgroundColor: 'red'
+    backgroundColor: 'red',
+    transform: 'translateX(-100px)'
   }"
   [animate]="{
     opacity: 1,
+    scale:0.5,
     backgroundColor: 'green',
+    transform: 'translateX(0px),scale(0.2)',
     transition:{
       duration: 1,
-      ease: 'ease-in'
+      ease: 'ease-in',
+      delay:1,
     }
   }"
   [exit]="{
     opacity: 1,
     scale: 2,
-    backgroundColor: 'red',
+    backgroundColor: 'yellow',
+    transform: 'translateX(100px)',
     transition: {
       duration: 1,
       ease: 'ease-in-out'
     }
   }"
-  class="w-full h-full grid grid-cols-3 grid-rows-3 gap-4"
+  class="grid w-full h-full grid-cols-3 grid-rows-3 gap-4"
 >
-  <h1 class="text-white text-3xl">--------Play--------</h1>
+  <h1 class="text-3xl text-white">--------Play--------</h1>
 </div>

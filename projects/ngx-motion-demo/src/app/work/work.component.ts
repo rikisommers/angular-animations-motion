@@ -1,11 +1,14 @@
 import { Component } from '@angular/core';
 import { MotionOneDirective } from '../../directives/motion-one.directive';
-
+import { PageTransitionComponent } from '../components/transition/page-transition/page-transition.component';
+import { HomeComponent } from "../home/home.component";
 @Component({
   selector: 'app-work',
   imports: [
-    MotionOneDirective
-  ],
+    MotionOneDirective,
+    PageTransitionComponent,
+    HomeComponent
+],
   standalone: true,
   templateUrl: './work.component.html',
   styleUrl: './work.component.scss'
